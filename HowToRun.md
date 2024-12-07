@@ -8,7 +8,7 @@ sudo apt install build-essential
 
 ## Build
 ```bash
-cd <path>/miniSQL-master
+cd <path>/MiniSQL-master
 rm -rf build
 mkdir build
 cd build
@@ -18,6 +18,6 @@ make
 
 ## Run binaries
 ```bash
-cd <path>/miniSQL-master
-./bin/MyminiSQL  database/input.sql database/output.csv
+cd <path>/MiniSQL-master
+./bin/MyMiniSQL  database/input.sql database/output.csv
 ```
