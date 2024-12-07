@@ -1,8 +1,8 @@
 // parser.cpp
 #include "parser.hpp"
-#include <sstream>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <sstream>
 #include <unordered_map>
 #include <vector>
 
@@ -37,7 +37,11 @@ void Parser::parse(const std::string& input, std::unordered_map<std::string, Dat
     }
 
     if (tokens.empty()) {
-        std::cout<<"Please input the correct command"<<std::endl;
+        if (inputFile.eof()) {
+            std::cout << "Done" << std::endl;
+        } else {
+            std::cout << "Please input the correct command" << std::endl;
+        }
         return;
     }
 
@@ -74,7 +78,7 @@ void Parser::parse(const std::string& input, std::unordered_map<std::string, Dat
                 std::string columnName = tokens[i];
                 std::string columnType = tokens[i + 1];
                 table.addColumn(columnName, columnType);
-                i += 2; 
+                i += 2;
             }
             db.createTable(tableName, table);
         } else if (command == "DROP") {
@@ -126,15 +130,13 @@ void Parser::parse(const std::string& input, std::unordered_map<std::string, Dat
                             table->queryTable();
                         }
                     } else {
-                        std::cout<<"i + 2 < tokens.size()"<<(i + 2 < tokens.size())<<std::endl;
-                        std::cout<<"tokens[i + 1] == WHERE"<<(tokens[i + 1] == "WHERE")<<std::endl;
                         if (i + 2 < tokens.size() && tokens[i + 1] == "WHERE") {
                             std::string whereColumn = tokens[i + 2];
-                            std::cout<<"whereColumn: "<<whereColumn<<std::endl;
+                            std::cout << "whereColumn: " << whereColumn << std::endl;
                             std::string whereOperator = tokens[i + 3];
-                            std::cout<<"whereOperator: "<<whereOperator<<std::endl;
+                            std::cout << "whereOperator: " << whereOperator << std::endl;
                             std::string whereValueStr = tokens[i + 4];
-                            std::cout<<"whereValueStr: "<<whereValueStr<<std::endl;
+                            std::cout << "whereValueStr: " << whereValueStr << std::endl;
 
                             if (whereValueStr.back() == ';') {
                                 whereValueStr.pop_back(); // Remove ending semicolon
@@ -161,14 +163,15 @@ void Parser::parse(const std::string& input, std::unordered_map<std::string, Dat
         } else if (command == "INSERT" && tokens[1] == "INTO") {
             std::string tableName = tokens[2];
             if (tokens[3] == "VALUES" && tokens[4] == "(" && tokens.back() == ")") {
-                std::cout<<"Inserting into table: "<<tableName<<std::endl;
+                std::cout << "Inserting into table: " << tableName << std::endl;
                 Table* table = db.getTable(tableName);
                 if (table) {
                     std::vector<ColumnType> values;
                     for (size_t i = 5; i < tokens.size() - 1; ++i) {
-                        if (tokens[i] == ",") continue; // Ignore commas
+                        if (tokens[i] == ",")
+                            continue; // Ignore commas
                         ColumnType value;
-                        if (tokens[i].front() == '"' ) {
+                        if (tokens[i].front() == '"') {
                             std::string strValue = tokens[i].substr(1); // Remove starting quote
                             while (i < tokens.size() - 1 && tokens[i].back() != '"') {
                                 strValue += " " + tokens[++i];
