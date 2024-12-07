@@ -1,16 +1,18 @@
 // query.cpp
 #include "query.hpp"
-#include "parser.hpp"
 #include "globals.hpp"
-#include <iostream>
+#include "parser.hpp"
 #include <fstream>
+#include <iostream>
 #include <sstream>
 Query::Query() {}
 
-Query::Query(Database* db) : dbptr(db) {}
+Query::Query(Database* db)
+    : dbptr(db) {}
 
 Query::Query(std::unordered_map<std::string, Database>* dbs, std::string* currentDb)
-    : databases(dbs), currentDatabase(currentDb) {}
+    : databases(dbs)
+    , currentDatabase(currentDb) {}
 
 Query::~Query() {}
 

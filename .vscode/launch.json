@@ -1,0 +1,38 @@
+{
+    // 使用 IntelliSense 了解相关属性。
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C++ Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/bin/MyMiniSQL", // 替换为你的可执行文件路径
+            "args": [
+                "${workspaceRoot}/database/input.sql",
+                "${workspaceRoot}/database/output.csv",
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb", // 如果使用 gdb 调试器
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "enviroment-cd": "${workspaceRoot}",
+                    "description": "location of source files",
+                    "text": "set directories ${workspaceRoot}",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build",
+            "miDebuggerPath": "/usr/bin/gdb", // 替换为你的 gdb 路径
+        }
+    ]
+}
