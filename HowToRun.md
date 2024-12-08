@@ -22,7 +22,7 @@ cd <path>/MiniSQL-master
 # Run bin
 ./bin/MyMiniSQL  database/input.sql database/output.csv
 # Run bin and output txt
-./bin/MyMiniSQL  database/input.sql database/output.csv > record_log.txt
+./bin/MyMiniSQL  database/input.sql database/output.csv > ./record_log.txt
 ```
 
 ## Notice

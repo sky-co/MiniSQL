@@ -7,19 +7,18 @@
 #include <iostream>
 #include <unordered_map>
 #include <variant>
-Table::Table()
-    : name("")
-    , columnsNT() {}
 
 Table::Table(const std::string& name)
-    : name(name)
-    , columnsNT() {}
+    : columnsNT{}
+    , columns{}
+    , name{name} {}
 
 void Table::insertRow(const std::vector<ColumnType>& values) {
     if (values.size() != columnsNT.size()) {
         std::cerr << "Column count mismatch. Expected " << columnsNT.size() << " values." << std::endl;
         return;
     }
+
     for (size_t i = 0; i < columnsNT.size(); ++i) {
         columns[columnsNT[i].first].push_back(values[i]);
     }
@@ -37,6 +36,7 @@ void Table::deleteRows(const std::string& whereColumn, const std::string& whereO
         } else if (whereOperator == ">") {
             conditionMet = (whereColData[i] > whereValue);
         }
+
         if (conditionMet) {
             for (auto& [colName, colData] : columns) {
                 colData.erase(colData.begin() + i);
@@ -50,7 +50,7 @@ void Table::deleteRows(const std::string& whereColumn, const std::string& whereO
 void Table::queryTable() const {
     std::cout << "Table " << name << " contents:" << std::endl;
     std::cout << "-------------------------------- " << std::endl;
-    for (int i = 0; i < columnsNT.size(); ++i) {
+    for (size_t i = 0; i < columnsNT.size(); ++i) {
         std::cout << columnsNT[i].first;
         if (i != columnsNT.size() - 1) {
             std::cout << ", ";
@@ -79,9 +79,8 @@ void Table::queryTable() const {
 
 void Table::queryTable(const std::vector<std::string>& columns) const {
     std::cout << "Table " << name << " contents:" << std::endl;
-
     std::cout << "-------------------------------- " << std::endl;
-    for (int i = 0; i < columns.size(); ++i) {
+    for (size_t i = 0; i < columns.size(); ++i) {
         std::cout << columns[i];
         if (i != columns.size() - 1) {
             std::cout << ", ";
@@ -112,7 +111,7 @@ void Table::queryTable(const std::vector<std::string>& columns) const {
 void Table::queryTable(const std::vector<std::string>& columns, const std::string& whereColumn, const std::string& whereOperator, const ColumnType& whereValue) const {
     std::cout << "Table " << name << " contents:" << std::endl;
     std::cout << "-------------------------------- " << std::endl;
-    for (int i = 0; i < columns.size(); ++i) {
+    for (size_t i = 0; i < columns.size(); ++i) {
         std::cout << columns[i];
         if (i != columns.size() - 1) {
             std::cout << ", ";
@@ -193,10 +192,10 @@ void Table::save(std::ofstream& file) const {
 }
 
 void Table::load(std::ifstream& file) {
-    size_t rowCount;
+    size_t rowCount{};
     file.read((char*)&rowCount, sizeof(rowCount));
 
-    size_t columnCount;
+    size_t columnCount{};
     file.read((char*)&columnCount, sizeof(columnCount));
     columnsNT.clear();
     columns.clear();
@@ -217,19 +216,19 @@ void Table::load(std::ifstream& file) {
 
     for (size_t i = 0; i < rowCount; ++i) {
         for (auto& [colName, colData] : columns) {
-            ColumnType value;
-            char type;
+            ColumnType value{};
+            char type{};
             file.read(&type, sizeof(type));
             if (type == 'i') {
-                int temp;
+                int temp{};
                 file.read((char*)&temp, sizeof(temp));
                 value = temp;
             } else if (type == 'd') {
-                double temp;
+                double temp{};
                 file.read((char*)&temp, sizeof(temp));
                 value = temp;
             } else if (type == 's') {
-                size_t length;
+                size_t length{};
                 file.read((char*)&length, sizeof(length));
                 std::string temp(length, '\0');
                 file.read(&temp[0], length);
@@ -308,6 +307,7 @@ void Table::updateColumn(const std::string& columnName, const std::string& opera
         } else if (whereOperator == ">") {
             conditionMet = (whereColData[i] > whereValue);
         }
+
         if (conditionMet) {
             std::visit([&](auto&& arg) {
                 using T = std::decay_t<decltype(arg)>;

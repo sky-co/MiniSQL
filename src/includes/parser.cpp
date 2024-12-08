@@ -8,9 +8,9 @@
 
 // Helper function to split input into tokens
 std::vector<std::string> split(const std::string& str, char delimiter) {
-    std::vector<std::string> tokens;
-    std::string token;
-    std::istringstream tokenStream(str);
+    std::vector<std::string> tokens{};
+    std::string token{};
+    std::istringstream tokenStream{str};
     while (std::getline(tokenStream, token, delimiter)) {
         if (!token.empty()) {
             tokens.push_back(token);
@@ -20,9 +20,9 @@ std::vector<std::string> split(const std::string& str, char delimiter) {
 }
 
 void Parser::parse(const std::string& input, std::unordered_map<std::string, Database>& databases, std::string& currentDatabase) {
-    std::istringstream inputStream(input);
-    std::string line;
-    std::vector<std::string> tokens;
+    std::istringstream inputStream{input};
+    std::string line{};
+    std::vector<std::string> tokens{};
 
     while (std::getline(inputStream, line)) {
         std::vector<std::string> lineTokens = split(line, ' ');
@@ -72,7 +72,7 @@ void Parser::parse(const std::string& input, std::unordered_map<std::string, Dat
         Database& db = databases[currentDatabase];
         if (command == "CREATE" && tokens[1] == "TABLE") {
             std::string tableName = tokens[2];
-            Table table(tableName);
+            Table table{tableName};
             size_t i = 4; // Skip "CREATE TABLE tableName ("
             while (i < tokens.size() && tokens[i] != ")") {
                 std::string columnName = tokens[i];
@@ -82,17 +82,17 @@ void Parser::parse(const std::string& input, std::unordered_map<std::string, Dat
             }
             db.createTable(tableName, table);
         } else if (command == "DROP") {
-            std::string table;
+            std::string table{};
             inputStream >> table;
             if (table == "TABLE") {
-                std::string tableName;
+                std::string tableName{};
                 inputStream >> tableName;
                 db.dropTable(tableName);
             }
         } else if (command == "SELECT") {
-            std::string tableName;
-            std::vector<std::string> columns;
-            bool selectAll = false;
+            std::string tableName{};
+            std::vector<std::string> columns{};
+            bool selectAll{false};
             size_t i = 1;
             if (tokens[i] == "*") {
                 selectAll = true;
@@ -117,7 +117,7 @@ void Parser::parse(const std::string& input, std::unordered_map<std::string, Dat
                             if (whereValueStr.back() == ';') {
                                 whereValueStr.pop_back(); // Remove ending semicolon
                             }
-                            ColumnType whereValue;
+                            ColumnType whereValue{};
                             if (whereValueStr.front() == '"') {
                                 whereValue = whereValueStr.substr(1, whereValueStr.size() - 2); // Remove quotes
                             } else if (whereValueStr.find('.') != std::string::npos) {
@@ -141,7 +141,7 @@ void Parser::parse(const std::string& input, std::unordered_map<std::string, Dat
                             if (whereValueStr.back() == ';') {
                                 whereValueStr.pop_back(); // Remove ending semicolon
                             }
-                            ColumnType whereValue;
+                            ColumnType whereValue{};
                             if (whereValueStr.front() == '"') {
                                 whereValue = whereValueStr.substr(1, whereValueStr.size() - 2); // Remove quotes
                             } else if (whereValueStr.find('.') != std::string::npos) {
@@ -166,11 +166,11 @@ void Parser::parse(const std::string& input, std::unordered_map<std::string, Dat
                 std::cout << "Inserting into table: " << tableName << std::endl;
                 Table* table = db.getTable(tableName);
                 if (table) {
-                    std::vector<ColumnType> values;
+                    std::vector<ColumnType> values{};
                     for (size_t i = 5; i < tokens.size() - 1; ++i) {
                         if (tokens[i] == ",")
                             continue; // Ignore commas
-                        ColumnType value;
+                        ColumnType value{};
                         if (tokens[i].front() == '"') {
                             std::string strValue = tokens[i].substr(1); // Remove starting quote
                             while (i < tokens.size() - 1 && tokens[i].back() != '"') {
@@ -210,7 +210,7 @@ void Parser::parse(const std::string& input, std::unordered_map<std::string, Dat
                 std::string columnName = tokens[3];
                 std::string operation = tokens[4];
                 std::string valueStr = tokens[5];
-                ColumnType value;
+                ColumnType value{};
                 if (valueStr.front() == '"') {
                     value = valueStr.substr(1, valueStr.size() - 2); // Remove quotes
                 } else if (valueStr.find('.') != std::string::npos) {
@@ -228,7 +228,7 @@ void Parser::parse(const std::string& input, std::unordered_map<std::string, Dat
                         if (whereValueStr.back() == ';') {
                             whereValueStr.pop_back(); // Remove ending semicolon
                         }
-                        ColumnType whereValue;
+                        ColumnType whereValue{};
                         if (whereValueStr.front() == '"') {
                             whereValue = whereValueStr.substr(1, whereValueStr.size() - 2); // Remove quotes
                         } else if (whereValueStr.find('.') != std::string::npos) {
@@ -259,7 +259,7 @@ void Parser::parse(const std::string& input, std::unordered_map<std::string, Dat
                         if (whereValueStr.back() == ';') {
                             whereValueStr.pop_back(); // Remove ending semicolon
                         }
-                        ColumnType whereValue;
+                        ColumnType whereValue{};
                         if (whereValueStr.front() == '"') {
                             whereValue = whereValueStr.substr(1, whereValueStr.size() - 2); // Remove quotes
                         } else if (whereValueStr.find('.') != std::string::npos) {

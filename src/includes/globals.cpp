@@ -1,8 +1,9 @@
 // globals.cpp
 #include "globals.hpp"
 
-std::ifstream inputFile;
-std::ofstream outputFile;
+std::ifstream inputFile{};
+std::ofstream outputFile{};
+
 std::ostream& operator<<(std::ostream& os, const ColumnType& column) {
     std::visit([&os](auto&& arg) {
         using T = std::decay_t<decltype(arg)>;
@@ -11,7 +12,8 @@ std::ostream& operator<<(std::ostream& os, const ColumnType& column) {
         } else if constexpr (std::is_same_v<T, std::string>) {
             os << arg;
         }
-    }, column);
+    },
+               column);
     return os;
 }
 std::string getColumnType(const ColumnType& column) {
@@ -26,5 +28,6 @@ std::string getColumnType(const ColumnType& column) {
         } else {
             return "unknown";
         }
-    }, column);
+    },
+                      column);
 }

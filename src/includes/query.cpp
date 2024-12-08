@@ -5,7 +5,6 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-Query::Query() {}
 
 Query::Query(Database* db)
     : dbptr(db) {}
@@ -14,14 +13,12 @@ Query::Query(std::unordered_map<std::string, Database>* dbs, std::string* curren
     : databases(dbs)
     , currentDatabase(currentDb) {}
 
-Query::~Query() {}
-
 void Query::getQ() {
     userInput.clear();
     std::cout << "MiniSQL> ";
     if (inputFile.is_open()) {
-        std::string line;
-        std::ostringstream queryStream;
+        std::string line{};
+        std::ostringstream queryStream{};
         while (std::getline(inputFile, line)) {
             queryStream << line << " ";
             if (line.find(';') != std::string::npos) {
@@ -30,8 +27,8 @@ void Query::getQ() {
         }
         userInput = queryStream.str();
     } else {
-        std::ostringstream queryStream;
-        std::string line;
+        std::ostringstream queryStream{};
+        std::string line{};
         while (std::getline(std::cin, line)) {
             queryStream << line << " ";
             if (line.find(';') != std::string::npos) {
@@ -46,11 +43,6 @@ void Query::getQ() {
 }
 
 void Query::excQ() {
-    Parser parser;
+    Parser parser{};
     parser.parse(userInput, *databases, *currentDatabase);
 }
-/*
-void Query::loaddb(Database& db){
-    this->db = db;
-}
-*/
