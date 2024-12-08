@@ -16,8 +16,15 @@ cmake ..
 make
 ```
 
-## Run binaries
+## Run
 ```bash
 cd <path>/MiniSQL-master
+# Run bin
 ./bin/MyMiniSQL  database/input.sql database/output.csv
+# Run bin and output txt
+./bin/MyMiniSQL  database/input.sql database/output.csv > record_log.txt
 ```
+
+## Notice
+- `build.sh` is used to build release version
+- `build_debug.sh` is used to build debug version

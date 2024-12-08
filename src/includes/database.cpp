@@ -1,7 +1,7 @@
 // database.cpp
 #include "database.hpp"
-#include <iostream>
 #include <fstream>
+#include <iostream>
 void Database::createTable(const std::string& name, Table& table) {
     if (tables.find(name) == tables.end()) {
         tables[name] = std::move(table);
@@ -50,11 +50,11 @@ void Database::load(const std::string& filename) {
         std::cerr << "Cannot open file: " << filename << std::endl;
         return;
     }
-    size_t tableCount;
+    size_t tableCount{};
     file.read((char*)&tableCount, sizeof(tableCount));
     tables.clear();
     for (size_t i = 0; i < tableCount; ++i) {
-        size_t nameLength;
+        size_t nameLength{};
         file.read((char*)&nameLength, sizeof(nameLength));
         std::string name(nameLength, '\0');
         file.read(&name[0], nameLength);

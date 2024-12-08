@@ -1,15 +1,19 @@
 // table.cpp
 #include "table.hpp"
-#include <iostream>
-#include <fstream>
-#include <variant>
-#include <algorithm>
-#include <unordered_map>
 #include "globals.hpp"
+#include <algorithm>
+#include <fstream>
 #include <iomanip>
-Table::Table() : name(""), columnsNT() {}
+#include <iostream>
+#include <unordered_map>
+#include <variant>
+Table::Table()
+    : name("")
+    , columnsNT() {}
 
-Table::Table(const std::string& name) : name(name), columnsNT() {}
+Table::Table(const std::string& name)
+    : name(name)
+    , columnsNT() {}
 
 void Table::insertRow(const std::vector<ColumnType>& values) {
     if (values.size() != columnsNT.size()) {
@@ -45,18 +49,29 @@ void Table::deleteRows(const std::string& whereColumn, const std::string& whereO
 
 void Table::queryTable() const {
     std::cout << "Table " << name << " contents:" << std::endl;
+    std::cout << "-------------------------------- " << std::endl;
+    for (int i = 0; i < columnsNT.size(); ++i) {
+        std::cout << columnsNT[i].first;
+        if (i != columnsNT.size() - 1) {
+            std::cout << ", ";
+        } else {
+            std::cout << std::endl;
+        }
+    }
+
     for (size_t i = 0; i < columns.begin()->second.size(); ++i) {
         for (const auto& column : columnsNT) {
             const auto& colData = columns.at(column.first);
             std::visit([](auto&& arg) {
                 if constexpr (std::is_same_v<std::decay_t<decltype(arg)>, std::string>) {
-                    std::cout << "\"" << arg << "\" ";
+                    std::cout << "\"" << arg << "\", ";
                 } else if constexpr (std::is_same_v<std::decay_t<decltype(arg)>, double>) {
                     std::cout << std::fixed << std::setprecision(2) << arg << " ";
                 } else {
-                    std::cout << arg << " ";
+                    std::cout << arg << ", ";
                 }
-            }, colData[i]);
+            },
+                       colData[i]);
         }
         std::cout << std::endl;
     }
@@ -64,19 +79,31 @@ void Table::queryTable() const {
 
 void Table::queryTable(const std::vector<std::string>& columns) const {
     std::cout << "Table " << name << " contents:" << std::endl;
+
+    std::cout << "-------------------------------- " << std::endl;
+    for (int i = 0; i < columns.size(); ++i) {
+        std::cout << columns[i];
+        if (i != columns.size() - 1) {
+            std::cout << ", ";
+        } else {
+            std::cout << std::endl;
+        }
+    }
+
     size_t rowCount = this->columns.begin()->second.size();
     for (size_t i = 0; i < rowCount; ++i) {
         for (const auto& column : columns) {
             const auto& colData = this->columns.at(column);
             std::visit([](auto&& arg) {
                 if constexpr (std::is_same_v<std::decay_t<decltype(arg)>, std::string>) {
-                    std::cout << "\"" << arg << "\" ";
+                    std::cout << "\"" << arg << "\", ";
                 } else if constexpr (std::is_same_v<std::decay_t<decltype(arg)>, double>) {
                     std::cout << std::fixed << std::setprecision(2) << arg << " ";
                 } else {
-                    std::cout << arg << " ";
+                    std::cout << arg << ", ";
                 }
-            }, colData[i]);
+            },
+                       colData[i]);
         }
         std::cout << std::endl;
     }
@@ -84,6 +111,16 @@ void Table::queryTable(const std::vector<std::string>& columns) const {
 
 void Table::queryTable(const std::vector<std::string>& columns, const std::string& whereColumn, const std::string& whereOperator, const ColumnType& whereValue) const {
     std::cout << "Table " << name << " contents:" << std::endl;
+    std::cout << "-------------------------------- " << std::endl;
+    for (int i = 0; i < columns.size(); ++i) {
+        std::cout << columns[i];
+        if (i != columns.size() - 1) {
+            std::cout << ", ";
+        } else {
+            std::cout << std::endl;
+        }
+    }
+
     const auto& whereColData = this->columns.at(whereColumn);
     size_t rowCount = whereColData.size();
     for (size_t i = 0; i < rowCount; ++i) {
@@ -100,13 +137,14 @@ void Table::queryTable(const std::vector<std::string>& columns, const std::strin
                 const auto& colData = this->columns.at(column);
                 std::visit([](auto&& arg) {
                     if constexpr (std::is_same_v<std::decay_t<decltype(arg)>, std::string>) {
-                        std::cout << "\"" << arg << "\" ";
+                        std::cout << "\"" << arg << "\", ";
                     } else if constexpr (std::is_same_v<std::decay_t<decltype(arg)>, double>) {
                         std::cout << std::fixed << std::setprecision(2) << arg << " ";
                     } else {
-                        std::cout << arg << " ";
+                        std::cout << arg << ", ";
                     }
-                }, colData[i]);
+                },
+                           colData[i]);
             }
             std::cout << std::endl;
         }
@@ -116,14 +154,14 @@ void Table::queryTable(const std::vector<std::string>& columns, const std::strin
 void Table::save(std::ofstream& file) const {
     auto rowCount = columns.begin()->second.size();
     file.write((char*)&rowCount, sizeof(rowCount));
-    
+
     auto columnCount = columnsNT.size();
     file.write((char*)&columnCount, sizeof(columnCount));
     for (const auto& column : columnsNT) {
         auto nameLength = column.first.size();
         file.write((char*)&nameLength, sizeof(nameLength));
         file.write(column.first.c_str(), nameLength);
-        
+
         auto typeLength = column.second.size();
         file.write((char*)&typeLength, sizeof(typeLength));
         file.write(column.second.c_str(), typeLength);
@@ -148,7 +186,8 @@ void Table::save(std::ofstream& file) const {
                     file.write((char*)&length, sizeof(length));
                     file.write(arg.c_str(), length);
                 }
-            }, value);
+            },
+                       value);
         }
     }
 }
@@ -156,7 +195,7 @@ void Table::save(std::ofstream& file) const {
 void Table::load(std::ifstream& file) {
     size_t rowCount;
     file.read((char*)&rowCount, sizeof(rowCount));
-    
+
     size_t columnCount;
     file.read((char*)&columnCount, sizeof(columnCount));
     columnsNT.clear();
@@ -166,12 +205,12 @@ void Table::load(std::ifstream& file) {
         file.read((char*)&nameLength, sizeof(nameLength));
         std::string name(nameLength, '\0');
         file.read(&name[0], nameLength);
-        
+
         size_t typeLength;
         file.read((char*)&typeLength, sizeof(typeLength));
         std::string type(typeLength, '\0');
         file.read(&type[0], typeLength);
-        
+
         columnsNT.push_back({name, type});
         columns[name] = std::vector<ColumnType>(rowCount);
     }
@@ -227,7 +266,8 @@ void Table::updateRow(const std::string& columnName, const std::string& operatio
                     arg -= std::get<double>(value);
                 }
             }
-        }, columns[columnName][i]);
+        },
+                   columns[columnName][i]);
     }
 }
 
@@ -252,7 +292,8 @@ void Table::updateColumn(const std::string& columnName, const std::string& opera
                     arg -= std::get<double>(value);
                 }
             }
-        }, columns[columnName][i]);
+        },
+                   columns[columnName][i]);
     }
 }
 
@@ -287,7 +328,8 @@ void Table::updateColumn(const std::string& columnName, const std::string& opera
                         arg -= std::get<double>(value);
                     }
                 }
-            }, columns[columnName][i]);
+            },
+                       columns[columnName][i]);
         }
     }
 }
