@@ -205,8 +205,8 @@ void Table::load(std::ifstream& file) {
         columns[name] = std::vector<ColumnType>(rowCount);
     }
 
-    for (size_t i = 0; i < rowCount; ++i) {
-        for (auto& [colName, colData] : columns) {
+    for (auto& [colName, colData] : columns) {
+        for (size_t i = 0; i < rowCount; ++i) {
             ColumnType value{};
 
             getline(file, line);
