@@ -38,7 +38,7 @@ int main(int argv, char* argc[]) {
         }
     }
     for (auto& [name, db] : databases) {
-        db.save(name + ".db");
+        db.save(name + ".txt");
     }
     inputFile.close();
     outputFile.close();

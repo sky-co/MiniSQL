@@ -49,23 +49,19 @@ void Parser::parse(const std::string& input, std::unordered_map<std::string, Dat
     if (command == "CREATE" && tokens[1] == "DATABASE") {
         std::string dbName = tokens[2];
         databases[dbName] = Database();
-        // 创建 dbName.db 文件
-        std::ofstream dbFile(dbName + ".db");
+        // 创建 dbName.txt 文件
+        std::ofstream dbFile(dbName + ".txt");
         if (dbFile) {
             dbFile.close();
             std::cout << "Database " << dbName << " created." << std::endl;
         } else {
-            std::cerr << "Failed to create database file: " << dbName << ".db" << std::endl;
+            std::cerr << "Failed to create database file: " << dbName << ".txt" << std::endl;
         }
     } else if (command == "USE" && tokens[1] == "DATABASE") {
         std::string dbName = tokens[2];
-        if (databases.find(dbName) != databases.end()) {
-            currentDatabase = dbName;
-            databases[dbName].load(dbName + ".db");
-            std::cout << "Using database " << dbName << "." << std::endl;
-        } else {
-            std::cerr << "Database " << dbName << " does not exist." << std::endl;
-        }
+        currentDatabase = dbName;
+        databases[dbName].load(dbName + ".txt");
+        std::cout << "Using database " << dbName << "." << std::endl;
     } else if (currentDatabase.empty()) {
         std::cerr << "No database selected." << std::endl;
     } else {

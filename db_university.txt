@@ -1,0 +1,22 @@
+1
+students
+2
+3
+ID
+INTEGER,
+Name
+TEXT,
+GPA
+FLOAT
+d
+3
+d
+3.8
+s
+Jay Chou
+s
+David Tao
+i
+1000
+i
+1002

@@ -30,42 +30,40 @@ Table* Database::getTable(const std::string& name) {
 }
 
 void Database::save(const std::string& filename) {
-    std::ofstream file(filename, std::ios::binary);
-    if (!file) {
-        std::cerr << "Cannot open file: " << filename << std::endl;
-        return;
-    }
+    std::ofstream outfile{};
+    outfile.open(filename, std::ios::out | std::ios::trunc);
 
     size_t tableCount = tables.size();
-    file.write((char*)&tableCount, sizeof(tableCount));
+    outfile << tableCount << std::endl;
     for (const auto& [name, table] : tables) {
-        size_t nameLength = name.size();
-        file.write((char*)&nameLength, sizeof(nameLength));
-        file.write(name.c_str(), nameLength);
-        table.save(file);
+        outfile << name << std::endl;
+        table.save(outfile);
     }
-    file.close();
+    outfile.close();
 }
 
 void Database::load(const std::string& filename) {
-    std::ifstream file(filename, std::ios::binary);
-    if (!file) {
+    std::ifstream input_file(filename);
+    if (!input_file.is_open()) {
         std::cerr << "Cannot open file: " << filename << std::endl;
         return;
     }
 
+    std::string line{};
     size_t tableCount{};
-    file.read((char*)&tableCount, sizeof(tableCount));
+    if (getline(input_file, line)) {
+        tableCount = std::stoi(line);
+    }
+
     tables.clear();
     for (size_t i = 0; i < tableCount; ++i) {
-        size_t nameLength{};
-        file.read((char*)&nameLength, sizeof(nameLength));
-
-        std::string name(nameLength, '\0');
-        file.read(&name[0], nameLength);
+        std::string name{};
+        getline(input_file, name);
 
         Table table(name);
-        table.load(file);
+        table.load(input_file);
         tables[name] = table;
     }
+
+    input_file.close();
 }

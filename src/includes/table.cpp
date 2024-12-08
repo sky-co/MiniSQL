@@ -150,40 +150,34 @@ void Table::queryTable(const std::vector<std::string>& columns, const std::strin
     }
 }
 
-void Table::save(std::ofstream& file) const {
+void Table::save(std::ofstream& outfile) const {
     auto rowCount = columns.begin()->second.size();
-    file.write((char*)&rowCount, sizeof(rowCount));
+    outfile << rowCount << std::endl;
 
-    auto columnCount = columnsNT.size();
-    file.write((char*)&columnCount, sizeof(columnCount));
+    const auto columnCount = columnsNT.size();
+    outfile << columnCount << std::endl;
+
     for (const auto& column : columnsNT) {
-        auto nameLength = column.first.size();
-        file.write((char*)&nameLength, sizeof(nameLength));
-        file.write(column.first.c_str(), nameLength);
-
-        auto typeLength = column.second.size();
-        file.write((char*)&typeLength, sizeof(typeLength));
-        file.write(column.second.c_str(), typeLength);
+        outfile << column.first << std::endl;
+        outfile << column.second << std::endl;
     }
 
     for (const auto& [colName, colData] : columns) {
         for (const auto& value : colData) {
-            std::visit([&file](auto&& arg) {
+            std::visit([&outfile](auto&& arg) {
                 using T = std::decay_t<decltype(arg)>;
                 if constexpr (std::is_same_v<T, int>) {
                     char type = 'i';
-                    file.write(&type, sizeof(type));
-                    file.write((char*)&arg, sizeof(arg));
+                    outfile << type << std::endl;
+                    outfile << arg << std::endl;
                 } else if constexpr (std::is_same_v<T, double>) {
                     char type = 'd';
-                    file.write(&type, sizeof(type));
-                    file.write((char*)&arg, sizeof(arg));
+                    outfile << type << std::endl;
+                    outfile << arg << std::endl;
                 } else if constexpr (std::is_same_v<T, std::string>) {
                     char type = 's';
-                    file.write(&type, sizeof(type));
-                    auto length = arg.size();
-                    file.write((char*)&length, sizeof(length));
-                    file.write(arg.c_str(), length);
+                    outfile << type << std::endl;
+                    outfile << arg << std::endl;
                 }
             },
                        value);
@@ -192,23 +186,20 @@ void Table::save(std::ofstream& file) const {
 }
 
 void Table::load(std::ifstream& file) {
-    size_t rowCount{};
-    file.read((char*)&rowCount, sizeof(rowCount));
+    std::string line{};
+    getline(file, line);
+    size_t rowCount = std::stoi(line);
 
-    size_t columnCount{};
-    file.read((char*)&columnCount, sizeof(columnCount));
+    getline(file, line);
+    size_t columnCount = std::stoi(line);
     columnsNT.clear();
     columns.clear();
     for (size_t i = 0; i < columnCount; ++i) {
-        size_t nameLength;
-        file.read((char*)&nameLength, sizeof(nameLength));
-        std::string name(nameLength, '\0');
-        file.read(&name[0], nameLength);
+        std::string name{};
+        getline(file, name);
 
-        size_t typeLength;
-        file.read((char*)&typeLength, sizeof(typeLength));
-        std::string type(typeLength, '\0');
-        file.read(&type[0], typeLength);
+        std::string type{};
+        getline(file, type);
 
         columnsNT.push_back({name, type});
         columns[name] = std::vector<ColumnType>(rowCount);
@@ -217,22 +208,18 @@ void Table::load(std::ifstream& file) {
     for (size_t i = 0; i < rowCount; ++i) {
         for (auto& [colName, colData] : columns) {
             ColumnType value{};
-            char type{};
-            file.read(&type, sizeof(type));
+
+            getline(file, line);
+            char type = line[0];
             if (type == 'i') {
-                int temp{};
-                file.read((char*)&temp, sizeof(temp));
-                value = temp;
+                getline(file, line);
+                value = std::stoi(line);
             } else if (type == 'd') {
-                double temp{};
-                file.read((char*)&temp, sizeof(temp));
-                value = temp;
+                getline(file, line);
+                value = std::stof(line);
             } else if (type == 's') {
-                size_t length{};
-                file.read((char*)&length, sizeof(length));
-                std::string temp(length, '\0');
-                file.read(&temp[0], length);
-                value = temp;
+                getline(file, line);
+                value = line;
             }
             colData[i] = value;
         }
