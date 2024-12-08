@@ -30,7 +30,16 @@ void Parser::parse(const std::string& input, std::unordered_map<std::string, Dat
             std::vector<std::string> subTokens = split(token, ';');
             for (auto& subToken : subTokens) {
                 if (!subToken.empty() && subToken != " " && subToken != ",") {
-                    tokens.push_back(subToken);
+                    if (subToken.find(',') != std::string::npos) {
+                        std::vector<std::string> subSubTokens = split(subToken, ',');
+                        for (auto& subSubToken : subSubTokens) {
+                            if (!subSubToken.empty() && subSubToken != " " && subSubToken != ",") {
+                                tokens.push_back(subSubToken);
+                            }
+                        }
+                    } else {
+                        tokens.push_back(subToken);
+                    }
                 }
             }
         }

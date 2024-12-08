@@ -3,9 +3,9 @@ students
 2
 3
 ID
-INTEGER,
+INTEGER
 Name
-TEXT,
+TEXT
 GPA
 FLOAT
 d
