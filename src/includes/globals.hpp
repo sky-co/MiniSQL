@@ -5,7 +5,6 @@
 #include <variant>
 
 extern std::ifstream inputFile;
-extern std::ofstream outputFile;
 
 using ColumnType = std::variant<int, double, std::string>;
 

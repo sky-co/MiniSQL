@@ -11,7 +11,6 @@
             "program": "${workspaceRoot}/bin/MyMiniSQL", // 替换为你的可执行文件路径
             "args": [
                 "${workspaceRoot}/database/input.sql",
-                "${workspaceRoot}/database/output.csv",
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceRoot}",

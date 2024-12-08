@@ -2,7 +2,6 @@
 #include "globals.hpp"
 
 std::ifstream inputFile{};
-std::ofstream outputFile{};
 
 std::ostream& operator<<(std::ostream& os, const ColumnType& column) {
     std::visit([&os](auto&& arg) {

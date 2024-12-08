@@ -6,23 +6,16 @@
 #include <unordered_map>
 
 int main(int argv, char* argc[]) {
-    // input: MyMiniSQL input.sql output.csv
-    if (argv != 3) {
+    // input: MyMiniSQL input.sql
+    if (argv != 2) {
         std::cout << "Please input the correct command" << std::endl;
         return 0;
     }
 
     std::string inputFilename = argc[1];
-    std::string outputFilename = argc[2];
     inputFile.open(inputFilename);
-    if (!inputFile || !outputFile) {
+    if (!inputFile) {
         std::cerr << "Cannot open the input file:" << inputFilename << std::endl;
-        return 0;
-    }
-
-    outputFile.open(outputFilename);
-    if (!outputFile) {
-        std::cerr << "Cannot open the output file:" << outputFilename << std::endl;
         return 0;
     }
 
@@ -41,7 +34,6 @@ int main(int argv, char* argc[]) {
         db.save(name + ".txt");
     }
     inputFile.close();
-    outputFile.close();
 
     return 0;
 }

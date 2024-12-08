@@ -20,9 +20,9 @@ make
 ```bash
 cd <path>/MiniSQL-master
 # Run bin
-./bin/MyMiniSQL  database/input.sql database/output.csv
+./bin/MyMiniSQL  database/input.sql
 # Run bin and output txt
-./bin/MyMiniSQL  database/input.sql database/output.csv > ./record_log.txt
+./bin/MyMiniSQL  database/input.sql > ./record_log.txt
 ```
 
 ## Notice

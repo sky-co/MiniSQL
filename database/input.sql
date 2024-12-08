@@ -1,5 +1,4 @@
 CREATE DATABASE db_university;
-USE DATABASE db_university;
 CREATE TABLE students (
     ID INTEGER,
     Name TEXT,
